@@ -1,3 +1,3 @@
 Authors:
 Michael Mwanza
-Edwars Kataika
+Edward Kataika
