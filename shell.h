@@ -16,3 +16,4 @@
 #endif
 
 int main(int args, char **argsv)
+void eval(char *cmdline)
