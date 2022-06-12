@@ -14,3 +14,5 @@
 #include <errno.h>
 
 #endif
+
+int main(int args, char **argsv)
