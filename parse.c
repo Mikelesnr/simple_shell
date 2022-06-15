@@ -1,52 +1,48 @@
- include "shell.h"
- 
- Int parse(const char *cmdline, struct command *cmd)
- {
- static char array[MAXLINE];
- const char delims[10] = "\t\r\n"; 
- char *line = array;
- char *token;
- char *endline;
- int is_bg;
- 
- if (cmdline == NULL)
- 	error("command line is Null\n");
- 	
- (void) strncpy(line, cmdline, MAXLINE);
- endline = line + strlen(line);
- 
- /*build argv list*/
- cmd->argc = 0;
- 
- while (line < endline)
- {
- 	/*skip delimiters*/
- 	Line += strspn (line, delims);
- 	if (lin >= endlinr) break;
- 	
- 	/*Find token delimeter*/
- 	token = line + strcspn (line, delims);
- 	
- 	/*record token as argument*/
- 	cmd->argv[cmd->argc++] = line;
- 	
- 	/*Check if argv is full*/
- 	if (cmd -> argc >= MAXARGS = 1) break;
- 	
- 	line = token + 1;		
- }
- 
- /** argument list must end with a Null pointer*/
- cmd-> argv [cmd->argc] = NULL;
- 
- if (cmd->argc == 0) /*ignore blank line*/
- 	return 1;
- 	
- cmd-> builtin = parseBuiltin(cmd);
- 
- /*should job run un background*/
- If ((is_bg = (*cmd->argc[cmd->argc = 1] == '&')) != 0)
- 	cmd->argv[--cmd->argc] = NULL;
- 
- return id_bg;
- }
+#include "shell.h"
+/**
+ * execute_proc - similar to puts in C
+ * @cmd: a pointer the integer we want to set to 402
+ *
+ * Return: int
+ */
+void execute_proc(char **cmd)
+{
+
+	char *parametro = (*(cmd + 1));
+	char *s, *slash = "/";
+	char *o;
+
+	char *vartoprint = *cmd;
+	char *argv[4];
+
+	if ((access(cmd[0], F_OK) == 0))
+	{
+		argv[0] = cmd[0];
+		argv[1] = parametro;
+		argv[2] = ".";
+		argv[3] = NULL;
+
+		if (execve(argv[0], argv, NULL) == -1)
+		{
+			perror("Error");
+		}
+	}
+	else
+	{
+		o = find_command(vartoprint);
+
+		slash = str_concat(o, slash);
+
+		s = str_concat(slash, *cmd);
+
+		argv[0] = s;
+		argv[1] = parametro;
+		argv[2] = ".";
+		argv[3] = NULL;
+
+		if (execve(argv[0], argv, NULL) == -1)
+		{
+			perror("Error");
+		}
+	}
+}
