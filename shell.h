@@ -13,10 +13,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
-
+int MAXARGS;
 struct command {
 int args;
-char *argv[MAXARGS};
+char *argv[MAXARGS];
 enum builtin_t{
 NUN, QUIT, JOBS< BG, FG} buitin;
 
