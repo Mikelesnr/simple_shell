@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * prompt - call prompt from another function (prompt)
