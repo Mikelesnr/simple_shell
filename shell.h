@@ -13,9 +13,15 @@
 #include <fcntl.h>
 #include <errno.h>
 
+
+struct command {
+int args;
+char *argv[MAXARGS};
+enum builtin_t{
+NUN, QUIT, JOBS< BG, FG} buitin;
+
 int main(int args, char **argsv)
 void eval(char *cmdline)
 
 #endif
-
 
