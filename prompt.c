@@ -1,7 +1,7 @@
-#include "shell.h"
+#include "main.h"
 
 /**
- * prompt - calls prompts from another function
+ * prompt - call prompt from another function (prompt)
  *
  **/
 void prompt(void)
