@@ -13,7 +13,9 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#endif
-
 int main(int args, char **argsv)
 void eval(char *cmdline)
+
+#endif
+
+
