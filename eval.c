@@ -1,26 +1,17 @@
 #include "shell.h"
+
 /**
- * eval - parses the arguments
- *
- *@cmdline : command line
- *
- *return
- */
-
-void eval(char *cmdline)
+ * main - a function that has an infinite loop
+ * @ac: No use
+ * @av: No use
+ * Return: loop.
+ **/
+int main(int ac, char **av)
 {
-	int bg;
-	struct command cmd;
+	(void)av;
+	(void)ac;
 
-	printf("evaluating '%s'\n", cmdline);
-	bg = parse(cmdline, *cmd);
-	printf("Found command %s\n", cmd.argv[0]);
-	if (bg == -1)return;
-
-	if (cmd.argv[0] == NULL) return;
-
-	if (cmd.builtin == NONE)
-		runSystemCOmmand(&cmd, bg);
-	else
-		runBuiltinCommand (&cmd, bg);
+	signal(SIGINT, controlC);
+	prompt();
+	return (0);
 }
