@@ -1,24 +1,46 @@
 #include "shell.h"
 
-void runSystemCommand(struct command *cmd, int bd)
+/**
+ * find_command - finds command to execute in path routes.
+ *
+ * @command: first position of getline input.
+ *
+ * Return: string of folder for command to be executed.
+ **/
+char *find_command(char *command)
 {
-	pid_t childPid;
+	DIR *folder;
+	struct dirent *entry;
+	char *cmd, comp, **str  = malloc(sizeof(char) * 1024);
+	char **split = malloc(sizeof(char) * 1024);
+	int i;
 
-	if ((childPid = fork()) < 0)
-		error("fork() error");
-	else if (childPid == 0)
+	while (*environ != NULL)
 	{
-		if (execvp(cmd->argv[0], cmd -> argv) < 0)
+		if (!(_strcmpdir(*environ, "PATH")))
 		{
-			printf("%s: Command not found\n", cmd->argv[0]);
-			exit(0);
-		}
+			*str = *environ;
+			for (i = 0; i < 9; i++, split++, str++)
+			{
+				*split = strtok(*str, ":='PATH'");
+				folder = opendir(*split);
+				if (folder == NULL)
+				{
+					perror("Unable to read directory");
+				}
+				while ((entry = readdir(folder)))
+				{
+					cmd = entry->d_name;
+					comp = _strcmpdir(cmd, command);
+					if (comp == 0)
+					{
+						return (*split);
+					}
+					if (cmd == NULL)
+					{
+						perror("Error");
+					}}}}
+		environ++;
 	}
-	else
-	{
-		if(bg)
-			pintf("Child in background [%d]", childPid);
-		else
-			wair(&childPid)
-	}
+	return ("Error: Not Found");
 }
