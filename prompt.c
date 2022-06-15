@@ -10,13 +10,13 @@
 
 int main(int args, char **argsv)
 {
-	int BUFFERSIZE = 1024;
-	char cmdline[BUFFERSIZE];
+	int MAXLINE = 1024;
+	char cmdline[MAXLINE];
 
 while (1)
 	{
 	printf("user:>");
-	if ((fgets(cmdline, BUFFERSIZE, stdin) == NULL) && ferror(stdin))
+	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
 		error("fgets error");
 	if (feof(stdin))
 	{
