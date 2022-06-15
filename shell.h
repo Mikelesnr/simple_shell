@@ -22,6 +22,9 @@ NUN, QUIT, JOBS< BG, FG} buitin;
 
 int main(int args, char **argsv)
 void eval(char *cmdline)
+int main(int args, char *argv[])
+Int parse(const char *cmdline, struct command *cmd)
+void runSystemCommand(struct command *cmd, int bd)
 
 #endif
 
