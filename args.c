@@ -1,102 +1,109 @@
 #include "shell.h"
-/**
- * _strcmpdir - compares strings to find dir.
- *
- * @s1: string.
- * @s2: string.
- *
- * Return: if match and any other number if otherwise.
- **/
-int _strcmpdir(char *s1, char *s2)
-{
-	int i = 0;
 
-	for (; (*s2 != '\0' && *s1 != '\0') && *s1 == *s2; s1++)
-	{
-		if (i == 3)
-			break;
-		i++;
-		s2++;
-	}
-
-	return (*s1 - *s2);
-}
 /**
- * charput - writes the character like putchar
- * @c: The character to print
+ * _strcat - concatenates two string in a path form
+ * @first: the first given destination
+ * @second: the second given source
  *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
+ * Return: (Success) to the newly string
+ * ------- (Fail) if it failed
  */
-int charput(char c)
+char *_strcat(char *first, char *second)
 {
-	return (write(1, &c, 1));
-}
+	int len1, len2, i = 0, j = 0;
+	char *result;
 
+	len1 = _strlen(first);
+	len2 = _strlen(second);
+	result = malloc((len1 + len2 + 2) * sizeof(char));
+	if (!result)
+		return (NULL);
+	*result = '\0';
+	while (first[j])
+		result[i++] = first[j++];
+	result[i++] = '/';
+	j = 0;
+	while (second[j])
+		result[i++] = second[j++];
+	result[i] = '\0';
+	return (result);
+}
 /**
- * place - similar to puts in C
- * @str: a pointer the integer we want to set to 402
+ * _strlen - finds the length of a given string
+ * @str: the given string
  *
- * Return: int
- */
-void place(char *str)
-{
-	while (*str != '\0')
-	{
-		charput(*str);
-		str++;
-	}
-}
-
-/**
- * _strlen - Len string.
- * @str: My string.
- * Return: Length.
+ * Return: (Success) the length of the string
+ * ------- (Fail) negative value
  */
 int _strlen(char *str)
 {
-	int i;
+	int len;
 
-	for (i = 0; str[i] != '\0'; i++)
+	for (len = 0; str[len]; len++)
 		;
-
-	return (i);
+	return (len);
 }
-
 /**
- * str_concat - concatane strings.
- * @s1: string.
- * @s2: second string.
- * Return: strings.
+ * _strcmp - compare two strings
+ * @s1: the first given string
+ * @s2: the second given string
+ *
+ * Return: (Success) a positive number
+ * ------- (Fail) a negative number
  */
-char *str_concat(char *s1, char *s2)
+int _strcmp(char *s1, char *s2)
 {
-	char *a;
-	int lens1, lens2, j, i, e;
+	int cmp = 0, i;
 
-	if (s1 == NULL)
-		s1 = "";
+	if (s1 == NULL || s2 == NULL)
+		return (1);
+	for (i = 0; s1[i]; i++)
+	{
+		if (s1[i] != s2[i])
+		{
+			cmp = s1[i] - s2[i];
+			break;
+		}
+		else
+			continue;
+	}
+	return (cmp);
+}
+/**
+ * _strchr - locates a character in a given string
+ * @str: the given string
+ * @c: the given string
+ *
+ * Return: (Success) a pointer to the first occurence of c
+ * ------- (Fail) return a null pointer
+ */
+char *_strchr(char *str, char c)
+{
+	char *ptr;
 
-	if (s2 == NULL)
-		s2 = "";
-
-	lens1 = _strlen(s1);
-
-	lens2 = _strlen(s2);
-
-	a = malloc(((lens1) + (lens2) + 1) * sizeof(char));
-
-	if (a == NULL)
+	if (str == NULL)
 		return (NULL);
+	for (ptr = str; *ptr; ptr++)
+		if (*ptr == c)
+			return (ptr);
+	return (NULL);
+}
+/**
+ * _strdup - dupicates string
+ * @str: the given string
+ *
+ * Return: (Success) a pointer to the duplicated string
+ * ------- (Fail) return a null pointer
+ */
+char *_strdup(char *str)
+{
+	char *dupl;
 
-	for (j = 0; j < lens1; j++)
-	{
-		a[j] = s1[j];
-	}
-
-	for (i = lens1, e = 0; e <= lens2; i++, e++)
-	{
-		a[i] = s2[e];
-	}
-	return (a);
+	if (str == NULL)
+		return (NULL);
+	dupl = malloc(_strlen(str) + 1);
+	if (dupl == NULL)
+		return (NULL);
+	_strcpy(dupl, str);
+	return (dupl);
 }
