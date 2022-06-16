@@ -1,48 +1,77 @@
 #include "shell.h"
 /**
- * execute_proc - similar to puts in C
- * @cmd: a pointer the integer we want to set to 402
+ * is_path_form - chekc if the given fikenname is a path
+ * @data: the data strucct pointer
  *
- * Return: int
+ * Return: (Success)
+ * ------- (Fail) otherwise
  */
-void execute_proc(char **cmd)
+int is_path_form(sh_t *data)
 {
-
-	char *parametro = (*(cmd + 1));
-	char *s, *slash = "/";
-	char *o;
-
-	char *vartoprint = *cmd;
-	char *argv[4];
-
-	if ((access(cmd[0], F_OK) == 0))
+	if (_strchr(data->args[0], '/') != 0)
 	{
-		argv[0] = cmd[0];
-		argv[1] = parametro;
-		argv[2] = ".";
-		argv[3] = NULL;
-
-		if (execve(argv[0], argv, NULL) == -1)
-		{
-			perror("Error");
-		}
+		data->cmd = _strdup(data->args[0]);
+		return (SUCCESS);
 	}
-	else
+	return (FAIL);
+}
+#define DELIMITER ":"
+/**
+ * is_short_form - chekc if the given fikenname is short form
+ * @data: the data strucct pointer
+ *
+ * Return: (Success)
+ * ------- (Fail) otherwise
+ */
+void is_short_form(sh_t *data)
+{
+	char *path, *token, *_path;
+	struct stat st;
+	int exist_flag = 0;
+
+	path = _getenv("PATH");
+	_path = _strdup(path);
+	token = strtok(_path, DELIMITER);
+	while (token)
 	{
-		o = find_command(vartoprint);
-
-		slash = str_concat(o, slash);
-
-		s = str_concat(slash, *cmd);
-
-		argv[0] = s;
-		argv[1] = parametro;
-		argv[2] = ".";
-		argv[3] = NULL;
-
-		if (execve(argv[0], argv, NULL) == -1)
+		data->cmd = _strcat(token, data->args[0]);
+		if (stat(data->cmd, &st) == 0)
 		{
-			perror("Error");
+			exist_flag += 1;
+			break;
 		}
+		free(data->cmd);
+		token = strtok(NULL, DELIMITER);
 	}
+	if (exist_flag == 0)
+	{
+		data->cmd = _strdup(data->args[0]);
+	}
+	free(_path);
+}
+#undef DELIMITER
+/**
+ * is_builtin - checks if the command is builtin
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
+ */
+int is_builtin(sh_t *data)
+{
+	blt_t blt[] = {
+		{"exit", abort_prg},
+		{"cd", change_dir},
+		{"help", display_help},
+		{NULL, NULL}
+	};
+	int i = 0;
+
+	while ((blt + i)->cmd)
+	{
+		if (_strcmp(data->args[0], (blt + i)->cmd) == 0)
+			return (SUCCESS);
+		i++;
+	}
+	return (NEUTRAL);
 }
