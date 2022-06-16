@@ -1,99 +1,130 @@
 #include "shell.h"
 
+#define SETOWD(V) (V = _strdup(_getenv("OLDPWD")))
 /**
- * lookforslash - identifies if first char is a slash.
- * @cmd: first string
- * Return: 1 if yes 0 if no.
+ * change_dir - changes directory
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
  */
-int lookforslash(char *cmd)
+int change_dir(sh_t *data)
 {
-	int cont = 0;
+	char *home;
 
-	while (cmd[cont])
+	home = _getenv("HOME");
+	if (data->args[1] == NULL)
 	{
-		if (cmd[0] == '/')
+		SETOWD(data->oldpwd);
+		if (chdir(home) < 0)
+			return (FAIL);
+		return (SUCCESS);
+	}
+	if (_strcmp(data->args[1], "-") == 0)
+	{
+		if (data->oldpwd == 0)
 		{
-			printf("%c\n", cmd[0]);
-			return (1);
+			SETOWD(data->oldpwd);
+			if (chdir(home) < 0)
+				return (FAIL);
 		}
-
-		cont++;
+		else
+		{
+			SETOWD(data->oldpwd);
+			if (chdir(data->oldpwd) < 0)
+				return (FAIL);
+		}
 	}
-	return (0);
+	else
+	{
+		SETOWD(data->oldpwd);
+		if (chdir(data->args[1]) < 0)
+			return (FAIL);
+	}
+	return (SUCCESS);
 }
-
+#undef GETCWD
 /**
- * compareExit - identifies if first char is a slash.
- * @s1: first string
- * @s2: exit string
- * Return: 1 if yes 0 if no.
+ * abort_prg - exit the program
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
  */
-int compareExit(char *s1, char *s2)
+int abort_prg(sh_t *data __attribute__((unused)))
 {
-	int i = 0;
+	int code, i = 0;
 
-	for (; (*s2 != '\0' && *s1 != '\0') && *s1 == *s2; s1++)
+	if (data->args[1] == NULL)
 	{
-		if (i == 3)
-			break;
-		i++;
-		s2++;
+		free_data(data);
+		exit(errno);
 	}
-
-	return (*s1 - *s2);
+	while (data->args[1][i])
+	{
+		if (_isalpha(data->args[1][i++]) < 0)
+		{
+			data->error_msg = _strdup("Illegal number\n");
+			return (FAIL);
+		}
+	}
+	code = _atoi(data->args[1]);
+	free_data(data);
+	exit(code);
 }
-
 /**
- * compareEnv - identifies if first char is a slash.
- * @s1: first string
- * @s2: exit string
- * Return: 1 if yes 0 if no.
+ * display_help - display the help menu
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
  */
-int compareEnv(char *s1, char *s2)
+int display_help(sh_t *data)
 {
-	int i = 0;
+	int fd, fw, rd = 1;
+	char c;
 
-	for (; (*s2 != '\0' && *s1 != '\0') && *s1 == *s2; s1++)
+	fd = open(data->args[1], O_RDONLY);
+	if (fd < 0)
 	{
-		if (i == 2)
-			break;
-		i++;
-		s2++;
+		data->error_msg = _strdup("no help topics match\n");
+		return (FAIL);
 	}
-
-	return (*s1 - *s2);
+	while (rd > 0)
+	{
+		rd = read(fd, &c, 1);
+		fw = write(STDOUT_FILENO, &c, rd);
+		if (fw < 0)
+		{
+			data->error_msg = _strdup("cannot write: permission denied\n");
+			return (FAIL);
+		}
+	}
+	PRINT("\n");
+	return (SUCCESS);
 }
 /**
- * identify_string - identyfy keyboard input.
- * @parameter: call prompt from another function (prompt)
- * Return: str
- **/
-char **identify_string(char *parameter)
+ * handle_builtin - handle and manage the builtins cmd
+ * @data: a pointer to the data structure
+ *
+ * Return: (Success) 0 is returned
+ * ------- (Fail) negative number will returned
+ */
+int handle_builtin(sh_t *data)
 {
-	char **buf = malloc(1024 * sizeof(char *));
-	char *split;
+	blt_t blt[] = {
+		{"exit", abort_prg},
+		{"cd", change_dir},
+		{"help", display_help},
+		{NULL, NULL}
+	};
 	int i = 0;
-	char *delim = " \t\n";
 
-
-	split = strtok(parameter, delim);
-
-	while (split != NULL)
+	while ((blt + i)->cmd)
 	{
-		buf[i] = split;
+		if (_strcmp(data->args[0], (blt + i)->cmd) == 0)
+			return ((blt + i)->f(data));
 		i++;
-		split = strtok(NULL, delim);
 	}
-	execute_proc(buf);
-	return (buf);
-
-}
-/**
- * controlC - avoid close the shell
- * @sig: keep going shell
- **/
-void  controlC(int sig)
-{
-	(void) sig;
-	write(1, "\n$ ", 3);
+	return (FAIL);
 }
